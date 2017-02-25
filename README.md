@@ -2,8 +2,8 @@
 
 Generate a unique mnemonic for any IPv4 address.
 
-Inspired by Adam Gurno's writeup, [IP Mnemonics](http://gurno.com/adam/mne/),
-here are a set of Python scripts that let you convert to and from mnemonics:
+Inspired by @gurno's writeup, [IP Mnemonics](http://gurno.com/adam/mne/),
+here's a set of Python scripts that let you convert to and from mnemonics:
 
 ```sh
 $ ip2mne 127.0.0.1
