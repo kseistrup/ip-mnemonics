@@ -1,0 +1,213 @@
+#!/usr/bin/python3
+# -*- mode: python; coding: utf-8 -*-
+"""
+usage: mne2ip [OPTIONS] [MNEMONIC [MNEMONIC …]]
+
+Positional arguments:
+  MNEMONIC              IP mnemonic
+
+Optional arguments:
+  -h, --help            show this help message and exit
+  -v, --version         show version information and exit
+  -c, --copyright       show copying policy and exit
+  -d DELIMITER, --delimiter DELIMITER
+                        use DELIMITER instead of ‘-’
+
+If no arguments are given, mnemonics are read from standard input.
+
+Please see http://gurno.com/adam/mne/ | https://archive.is/1wiw5
+for the reason this program exists.
+
+Please report issues at https://github.com/kseistrup/ip-mnemonics
+"""
+##############################################################################
+# This program is free software; you can redistribute it and/or modify it    #
+# under the terms of the GNU General Public License as published by the Free #
+# Software Foundation; either version 3 of the License, or (at your option)  #
+# any later version.                                                         #
+#                                                                            #
+# This program is distributed in the hope that it will be useful, but with-  #
+# out any warranty; without even the implied warranty of merchantability or  #
+# fitness for a particular purpose. See the GNU General Public License for   #
+# more details.  <http://gplv3.fsf.org/>                                     #
+##############################################################################
+
+import sys
+import os
+import pathlib
+import argparse
+import ipaddress
+import pprint
+
+try:
+    from locale import (Error, setlocale, LC_ALL)
+    _ = setlocale(LC_ALL, '')
+except (ImportError, ModuleNotFoundError, NameError, Error):
+    pass
+
+__author__ = 'Klaus Alexander Seistrup <klaus@seistrup.dk>'
+__whoami__ = 'mne2ip'
+__revision__ = '2017-02-25'
+__version__ = '0.0.1α ({})'.format(__revision__)
+__copyright__ = """\
+{progname} {version}
+Copyright © 2017 Klaus Alexander Seistrup <klaus@seistrup.dk>
+
+This is free software; see the source for copying conditions. There is no
+warranty; not even for merchantability or fitness for a particular purpose.\
+""".format(progname=__whoami__, version=__version__)
+
+DEBUG = os.environ.get('DEBUG', 'False')[0].upper() in '1JTY'  # 1/Ja/True/Yes
+
+EPILOG = """\
+If no arguments are given, mnemonics are read from standard input.
+
+Please see http://gurno.com/adam/mne/ | https://archive.is/1wiw5
+for the reason this program exists.
+
+Please report issues at https://github.com/kseistrup/ip-mnemonics\
+"""
+
+# http://gurno.com/adam/mne/
+WORDS = """
+zip ace act add age aim air and ant ape arm art ash ask bad bag
+ban bar bat bay bed bet bid big bin bit bog boo box bud bug bun
+bus cab can cap car cat cop cot cow cry cub cup cut day den did
+die dig dim dip dog dry dub dud dug ear eat eel egg elf elk elm
+end fan far fat fed few fib fig fin fit fix fly fog foo fox fry
+fun gab gag gap gas gel gem get gin got gum gut had has hat hen
+hex hid hip hit hog hop hot how hub hug hum hut ice ill imp ink
+irk jab jam jar jaw jet jig job jog jot joy key kid kin kit lab
+lag lap law lax lay leg let lid lip lit lot low mad map mat men
+met mix mob moo mop mud mug nab nag nap net new nil nip nod nor
+now nut oak oat odd off old orb out owl own pad pal pan pay pen
+pet pie pig pin pit ply pod pop pot pox pry pun pup put rag ran
+rat raw red rid rig rip rot row rub rug run rut rye sad sag sap
+sat saw say set shy sip sit ski sky sly sob soy spa spy tab tag
+tan tap tar tax the tie tin tip top toy try tub tug use van vat
+vex vow wag war was wax web wet who wig win wit yes yet zoo all
+"""
+MNEMONICS = {val: key for (key, val) in enumerate(WORDS.split())}
+
+
+def die(message=None):
+    """Exit gracefully"""
+    if message:
+        print(message, file=sys.stderr)
+    sys.exit(1 if message else 0)
+
+
+def debug(head, data):
+    """Possibly pretty print an object to stderr"""
+    if DEBUG:
+        pprint.pprint({head: data}, stream=sys.stderr)
+
+
+def split_mnemonic(mnemonic):
+    """Guess delimiter, then split accordingly"""
+    length = len(mnemonic)
+    if length == 15:
+        # xxx?xxx?xxx?xxx
+        if mnemonic[3] == mnemonic[7] == mnemonic[11]:
+            words = mnemonic.split(mnemonic[3])
+        else:
+            words = (
+                mnemonic[0:3], mnemonic[4:7],
+                mnemonic[8:11], mnemonic[-3:]
+            )
+    elif length == 12:
+        # aaabbbcccddd
+        words = (
+            mnemonic[0:3], mnemonic[3:6], mnemonic[6:9], mnemonic[-3:]
+        )
+    else:
+        die('not a valid mnemonic: {}'.format(mnemonic))
+
+    return words
+
+
+def mne2ip(mnemonic, delimiter='-'):
+    """Translate the mnemonic into its IPv4 address"""
+
+    if len(mnemonic) == 15 and mnemonic.count(delimiter) == 3:
+        words = mnemonic.split(delimiter)
+    else:
+        words = split_mnemonic(mnemonic)
+
+    try:
+        octets = (MNEMONICS[word] for word in words)
+        ipv4 = ipaddress.ip_address('{}.{}.{}.{}'.format(*octets))
+    except KeyError as error:
+        die('invalid word ‘{}’ in mnemonic ‘{}’'.format(error, mnemonic))
+    except ValueError as error:
+        die(error)
+
+    return (delimiter.join(words), ipv4.compressed)
+
+
+def read_stdin():
+    """Return elements from standard input, ignoring comments"""
+    words = []
+
+    for line in sys.stdin:
+        if len(line) < 13:  # 'aaabbbcccddd\n'
+            continue
+        if line.startswith('#'):
+            continue
+        if line.count('#') > 0:
+            line = line.split('#', 1)[0]
+
+        words += line.split()
+
+    return words
+
+
+def main(progname=__whoami__):
+    """Main entry point"""
+
+    debug('dict', MNEMONICS)
+    debug('argv', sys.argv)
+
+    parser = argparse.ArgumentParser(
+        prog=progname,
+        formatter_class=argparse.RawTextHelpFormatter,
+        epilog=EPILOG
+    )
+    # Generic options
+    parser.add_argument('-v', '--version', action='version',
+                        version='%(prog)s/{}'.format(__version__),
+                        help='show version information and exit')
+    parser.add_argument('-c', '--copyright', action='version',
+                        version=__copyright__,
+                        help='show copying policy and exit')
+    # Specific option(s)
+    parser.add_argument('-d', '--delimiter', default='-',
+                        help='use DELIMITER instead of ‘-’')
+    # Optional IPv4 addresses
+    parser.add_argument('MNEMONIC', nargs='*', help='IP mnemonic')
+
+    args = parser.parse_args()
+    debug('args', args)
+
+    cache = set()
+    delimiter = args.delimiter
+    mnemonics = args.MNEMONIC or read_stdin()
+
+    if len(mnemonics) > 1:
+        for mnemonic in mnemonics:
+            (mnemonic, ipv4) = mne2ip(mnemonic, delimiter)
+            if ipv4 in cache:
+                continue
+            cache.add(ipv4)
+            print('\t'.join((mnemonic, ipv4)))
+    else:
+        (_, address) = mne2ip(mnemonics[0], delimiter)
+        print(address)
+
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main(pathlib.Path(sys.argv[0]).name))
+
+# eof
