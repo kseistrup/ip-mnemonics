@@ -14,4 +14,6 @@ $ ip2mne 10.0.0.1 172.16.2.3 192.168.4.255
 10.0.0.1	arm-zip-zip-ace
 172.16.2.3	pal-ban-act-add
 192.168.4.255	rat-out-age-all
+$ dig a www.google.com +short | ip2mne
+sky-eat-shy-fed
 ```
