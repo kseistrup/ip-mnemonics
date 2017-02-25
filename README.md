@@ -17,3 +17,12 @@ $ ip2mne 10.0.0.1 172.16.2.3 192.168.4.255
 $ dig a www.google.com +short | ip2mne
 sky-eat-shy-fed
 ```
+
+### Requirements
+
+* Python 3
+
+### Installation
+
+Copy the scripts, `ip2mne` and `mne2ip`, to a directory in your `$PATH`
+and you're all set.
