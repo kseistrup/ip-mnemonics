@@ -24,5 +24,5 @@ sky-eat-shy-fed
 
 ### Installation
 
-Copy the scripts, `ip2mne` and `mne2ip`, to a directory in your `$PATH`
-and you're all set.
+Copy the scripts, `ip2mne` and `mne2ip`, from `src` to a directory in your
+`$PATH` and you're all set.
