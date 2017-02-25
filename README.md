@@ -1,4 +1,4 @@
-# IP Mnemonics
+## IP Mnemonics
 
 Generate a unique mnemonic for any IPv4 address.
 
