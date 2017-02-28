@@ -47,8 +47,8 @@ except (ImportError, ModuleNotFoundError, NameError, Error):
 
 __author__ = 'Klaus Alexander Seistrup <klaus@seistrup.dk>'
 __whoami__ = 'mne2ip'
-__revision__ = '2017-02-25'
-__version__ = '0.0.1α ({})'.format(__revision__)
+__revision__ = '2017-02-28'
+__version__ = '0.0.2α ({})'.format(__revision__)
 __copyright__ = """\
 {progname} {version}
 Copyright © 2017 Klaus Alexander Seistrup <klaus@seistrup.dk>
@@ -92,7 +92,7 @@ MNEMONICS = {val: key for (key, val) in enumerate(WORDS.split())}
 
 def die(message=None):
     """Exit gracefully"""
-    if message:
+    if message is not None:
         print(message, file=sys.stderr)
     sys.exit(1 if message else 0)
 
@@ -191,7 +191,11 @@ def main(progname=__whoami__):
 
     cache = set()
     delimiter = args.delimiter
-    mnemonics = args.MNEMONIC or read_stdin()
+
+    try:
+        mnemonics = args.MNEMONIC or read_stdin()
+    except KeyboardInterrupt:
+        die('')
 
     if len(mnemonics) > 1:
         for mnemonic in mnemonics:
