@@ -1,5 +1,9 @@
 # Change log
 
+## [0.1.1] — 2017-03-07
+### Fixed
+- Typo corrected
+
 ## [0.1.0] — 2017-03-07
 ### Changed
 - Collapsed ip2mne and mne2ip into one script: ipmne

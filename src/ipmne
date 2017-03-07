@@ -16,7 +16,7 @@ optional arguments:
                         custom format containing one or more
                         placeholders: {ipv4}, {mnemonic}, {hostname}
 
-Arguments are read from standard input if not provided excplicitly.
+Arguments are read from standard input if not provided explicitly.
 
 Please see http://gurno.com/adam/mne/ | https://archive.is/1wiw5
 for the reason this program exists.
@@ -59,7 +59,7 @@ except (ImportError, ModuleNotFoundError):
 __author__ = 'Klaus Alexander Seistrup <klaus@seistrup.dk>'
 __whoami__ = 'ipmne'
 __revision__ = '2017-03-07'
-__version__ = '0.1.0α ({})'.format(__revision__)
+__version__ = '0.1.1α ({})'.format(__revision__)
 __copyright__ = """\
 ipmne {}
 Copyright © 2017 Klaus Alexander Seistrup <klaus@seistrup.dk>

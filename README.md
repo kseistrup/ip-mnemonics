@@ -41,7 +41,7 @@ optional arguments:
                         custom format containing one or more
                         placeholders: {ipv4}, {mnemonic}, {hostname}
 
-Arguments are read from standard input if not provided excplicitly.
+Arguments are read from standard input if not provided explicitly.
 ```
 
 ### Requirements
