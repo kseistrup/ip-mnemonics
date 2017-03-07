@@ -23,6 +23,27 @@ $ ipmne --format '{mnemonic}' www.google.com
 sky-eat-shy-hog
 ```
 
+### Usage
+
+```txt
+Usage: ipmne [OPTIONS] [ARG [ARG …]]
+
+positional arguments:
+  ARG                   IPv4 address, hostname or mnemonic
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -v, --version         show version information and exit
+  -c, --copyright       show copying policy and exit
+  -N, --no-dns          do not resolve hostnames and IP addresses
+  -S, --no-sort         do not sort output by IP address
+  -f FORMAT, --format FORMAT
+                        custom format containing one or more
+                        placeholders: {ipv4}, {mnemonic}, {hostname}
+
+Arguments are read from standard input if not provided excplicitly.
+```
+
 ### Requirements
 
 * [Python 3](https://www.python.org/)
